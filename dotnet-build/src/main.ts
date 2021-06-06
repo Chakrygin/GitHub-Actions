@@ -17,7 +17,7 @@ async function main() {
 
     await core.group(`Restoring "${solution}"...`, async () => {
       await dotnet.restore(solution, {
-        packages: 'packages'
+        packages: 'packages',
       });
     });
 
@@ -59,7 +59,7 @@ async function main() {
         await dotnet.pack(project, {
           configuration: configuration,
           output: 'artifacts',
-          includeSymbols: false,
+          includeSymbols: true,
         });
       });
 
@@ -119,7 +119,7 @@ async function findProjectsToIntegrationTesting() {
 
   if (projects.length > 0) {
     const s = projects.length > 1 ? 's' : '';
-    core.info(`Project${s} to unit testing:`);
+    core.info(`Project${s} to integration testing:`);
 
     for (const project of projects) {
       core.info(`    ${project}`);

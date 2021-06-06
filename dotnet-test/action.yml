@@ -1,0 +1,13 @@
+name: .NET Test
+description: .NET Test
+
+runs:
+  using: node12
+  main: ./dist/index.js
+
+inputs:
+  PROJECTS_TO_TESTING:
+    description: PROJECTS_TO_TESTING
+    required: false
+    default: |
+      *
