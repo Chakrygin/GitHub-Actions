@@ -4139,7 +4139,7 @@ function findSolution() {
             core.info(`    ${solution}`);
         }
         console.log();
-        if (solutions.length > 0) {
+        if (solutions.length > 1) {
             throw new Error('Multiple solutions to restoring and building found.');
         }
         return solutions[0];
