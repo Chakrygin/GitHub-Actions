@@ -4,8 +4,23 @@ import * as glob from "@actions/glob"
 import * as os from 'os'
 import * as path from 'path'
 
+import * as dotnet from './dotnet'
+
 async function main() {
   try {
+
+    const binaries = await findBinariesToIntegrationTesting();
+
+    for (const binariy of binaries) {
+      await core.group(`Testing "${binariy}"...`, async () => {
+        await dotnet.vstest(binariy, {
+          logger: 'trx',
+          resultsDirectory: 'TestResults'
+        });
+      });
+
+      console.log();
+    }
 
   } catch (error) {
     core.setFailed(error.message)
