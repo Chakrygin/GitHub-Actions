@@ -30,3 +30,83 @@ export async function build(project: string, options: BuildOptions = {}) {
 
   await exec('dotnet', args);
 }
+
+export interface TestOptions {
+  configuration?: string;
+  logger?: string;
+  resultsDirectory?: string;
+}
+
+export async function test(project: string, options: TestOptions) {
+  const args = ['test', project];
+
+  args.push('--nologo');
+  args.push('--no-restore');
+  args.push('--no-build');
+
+  if (options.configuration) {
+    args.push('--configuration', options.configuration);
+  }
+
+  if (options.logger) {
+    args.push('--logger', options.logger);
+  }
+
+  if (options.resultsDirectory) {
+    args.push('--results-directory', options.resultsDirectory);
+  }
+
+  await exec('dotnet', args);
+}
+
+export interface PublishOptions {
+  configuration?: string;
+  output?: string;
+}
+
+export async function publish(project: string, options: PublishOptions) {
+  const args = ['publish', project];
+
+  args.push('--nologo');
+  args.push('--no-restore');
+  args.push('--no-build');
+
+  if (options.configuration) {
+    args.push('--configuration', options.configuration);
+  }
+
+  if (options.output) {
+    args.push('--output', options.output);
+  }
+
+  await exec('dotnet', args);
+}
+
+export interface PackOptions {
+  configuration?: string;
+  output?: string;
+  includeSymbols?: boolean
+}
+
+export async function pack(project: string, options: PackOptions) {
+  const args = ['pack', project];
+
+  args.push('--nologo');
+  args.push('--no-restore');
+  args.push('--no-build');
+
+  if (options.configuration) {
+    args.push('--configuration', options.configuration);
+  }
+
+  if (options.output) {
+    args.push('--output', options.output);
+  }
+
+  if (options.includeSymbols) {
+    args.push('/property:IncludeSymbols=true');
+    args.push('/property:SymbolPackageFormat=snupkg');
+  }
+
+  await exec('dotnet', args);
+}

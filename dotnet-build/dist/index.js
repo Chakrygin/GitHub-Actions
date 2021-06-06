@@ -4088,6 +4088,58 @@ function build(project, options = {}) {
         yield (0,exec.exec)('dotnet', args);
     });
 }
+function test(project, options) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const args = ['test', project];
+        args.push('--nologo');
+        args.push('--no-restore');
+        args.push('--no-build');
+        if (options.configuration) {
+            args.push('--configuration', options.configuration);
+        }
+        if (options.logger) {
+            args.push('--logger', options.logger);
+        }
+        if (options.resultsDirectory) {
+            args.push('--results-directory', options.resultsDirectory);
+        }
+        yield (0,exec.exec)('dotnet', args);
+    });
+}
+function publish(project, options) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const args = ['publish', project];
+        args.push('--nologo');
+        args.push('--no-restore');
+        args.push('--no-build');
+        if (options.configuration) {
+            args.push('--configuration', options.configuration);
+        }
+        if (options.output) {
+            args.push('--output', options.output);
+        }
+        yield (0,exec.exec)('dotnet', args);
+    });
+}
+function pack(project, options) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const args = ['pack', project];
+        args.push('--nologo');
+        args.push('--no-restore');
+        args.push('--no-build');
+        if (options.configuration) {
+            args.push('--configuration', options.configuration);
+        }
+        if (options.output) {
+            args.push('--output', options.output);
+        }
+        if (options.includeSymbols) {
+            args.push('/property:IncludeSymbols=true');
+            args.push('/property:SymbolPackageFormat=snupkg');
+        }
+        yield (0,exec.exec)('dotnet', args);
+    });
+}
 
 ;// CONCATENATED MODULE: ./src/main.ts
 var main_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -4108,6 +4160,9 @@ function main() {
         try {
             const configuration = core.getInput('CONFIGURATION');
             const solution = yield findSolution();
+            const projectsToUnitTesting = yield findProjectsToUnitTesting();
+            const projectsToIntegrationTesting = yield findProjectsToIntegrationTesting();
+            const projectsToPacking = yield findProjectsToPacking();
             yield core.group(`Restoring "${solution}"...`, () => main_awaiter(this, void 0, void 0, function* () {
                 yield restore(solution, {
                     packages: 'packages'
@@ -4120,6 +4175,35 @@ function main() {
                 });
             }));
             console.log();
+            for (const project of projectsToUnitTesting) {
+                yield core.group(`Testing "${project}"...`, () => main_awaiter(this, void 0, void 0, function* () {
+                    yield test(project, {
+                        configuration: configuration,
+                        logger: 'trx',
+                        resultsDirectory: 'TestResults'
+                    });
+                }));
+                console.log();
+            }
+            for (const project of projectsToIntegrationTesting) {
+                yield core.group(`Publishing "${project}"...`, () => main_awaiter(this, void 0, void 0, function* () {
+                    yield publish(project, {
+                        configuration: configuration,
+                        output: external_path_.join('artifacts/tests', external_path_.basename(project, '.csproj'))
+                    });
+                }));
+                console.log();
+            }
+            for (const project of projectsToPacking) {
+                yield core.group(`Packing "${project}"...`, () => main_awaiter(this, void 0, void 0, function* () {
+                    yield pack(project, {
+                        configuration: configuration,
+                        output: 'artifacts',
+                        includeSymbols: false,
+                    });
+                }));
+                console.log();
+            }
         }
         catch (error) {
             core.setFailed(error.message);
@@ -4143,6 +4227,52 @@ function findSolution() {
             throw new Error('Multiple solutions to restoring and building found.');
         }
         return solutions[0];
+    });
+}
+function findProjectsToUnitTesting() {
+    return main_awaiter(this, void 0, void 0, function* () {
+        const patterns = core.getInput('PROJECTS_TO_UNIT_TESTING');
+        const projects = yield find(patterns);
+        if (projects.length > 0) {
+            const s = projects.length > 1 ? 's' : '';
+            core.info(`Project${s} to unit testing:`);
+            for (const project of projects) {
+                core.info(`    ${project}`);
+            }
+            console.log();
+        }
+        return projects;
+    });
+}
+function findProjectsToIntegrationTesting() {
+    return main_awaiter(this, void 0, void 0, function* () {
+        const patterns = core.getInput('PROJECTS_TO_INTEGRATION_TESTING');
+        const projects = yield find(patterns);
+        if (projects.length > 0) {
+            const s = projects.length > 1 ? 's' : '';
+            core.info(`Project${s} to unit testing:`);
+            for (const project of projects) {
+                core.info(`    ${project}`);
+            }
+            console.log();
+        }
+        return projects;
+    });
+}
+function findProjectsToPacking() {
+    return main_awaiter(this, void 0, void 0, function* () {
+        const patterns = core.getInput('PROJECTS_TO_PACKING');
+        const projects = yield find(patterns);
+        if (projects.length == 0) {
+            throw new Error('No projects to packing found.');
+        }
+        const s = projects.length > 1 ? 's' : '';
+        core.info(`Project${s} to packing:`);
+        for (const project of projects) {
+            core.info(`    ${project}`);
+        }
+        console.log();
+        return projects;
     });
 }
 function find(patterns) {

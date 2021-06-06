@@ -11,6 +11,9 @@ async function main() {
     const configuration = core.getInput('CONFIGURATION');
 
     const solution = await findSolution();
+    const projectsToUnitTesting = await findProjectsToUnitTesting();
+    const projectsToIntegrationTesting = await findProjectsToIntegrationTesting();
+    const projectsToPacking = await findProjectsToPacking();
 
     await core.group(`Restoring "${solution}"...`, async () => {
       await dotnet.restore(solution, {
@@ -27,6 +30,41 @@ async function main() {
     });
 
     console.log();
+
+    for (const project of projectsToUnitTesting) {
+      await core.group(`Testing "${project}"...`, async () => {
+        await dotnet.test(project, {
+          configuration: configuration,
+          logger: 'trx',
+          resultsDirectory: 'TestResults'
+        });
+      });
+
+      console.log();
+    }
+
+    for (const project of projectsToIntegrationTesting) {
+      await core.group(`Publishing "${project}"...`, async () => {
+        await dotnet.publish(project, {
+          configuration: configuration,
+          output: path.join('artifacts/tests', path.basename(project, '.csproj'))
+        });
+      });
+
+      console.log();
+    }
+
+    for (const project of projectsToPacking) {
+      await core.group(`Packing "${project}"...`, async () => {
+        await dotnet.pack(project, {
+          configuration: configuration,
+          output: 'artifacts',
+          includeSymbols: false,
+        });
+      });
+
+      console.log();
+    }
 
   } catch (error) {
     core.setFailed(error.message)
@@ -45,7 +83,7 @@ async function findSolution() {
   core.info(`Solution${s} to restoring and building:`);
 
   for (const solution of solutions) {
-    core.info(`    ${solution}`)
+    core.info(`    ${solution}`);
   }
 
   console.log();
@@ -55,6 +93,61 @@ async function findSolution() {
   }
 
   return solutions[0];
+}
+
+async function findProjectsToUnitTesting() {
+  const patterns = core.getInput('PROJECTS_TO_UNIT_TESTING');
+  const projects = await find(patterns);
+
+  if (projects.length > 0) {
+    const s = projects.length > 1 ? 's' : '';
+    core.info(`Project${s} to unit testing:`);
+
+    for (const project of projects) {
+      core.info(`    ${project}`);
+    }
+
+    console.log();
+  }
+
+  return projects;
+}
+
+async function findProjectsToIntegrationTesting() {
+  const patterns = core.getInput('PROJECTS_TO_INTEGRATION_TESTING');
+  const projects = await find(patterns);
+
+  if (projects.length > 0) {
+    const s = projects.length > 1 ? 's' : '';
+    core.info(`Project${s} to unit testing:`);
+
+    for (const project of projects) {
+      core.info(`    ${project}`);
+    }
+
+    console.log();
+  }
+
+  return projects;
+}
+
+async function findProjectsToPacking() {
+  const patterns = core.getInput('PROJECTS_TO_PACKING');
+  const projects = await find(patterns);
+  if (projects.length == 0) {
+    throw new Error('No projects to packing found.');
+  }
+
+  const s = projects.length > 1 ? 's' : '';
+  core.info(`Project${s} to packing:`);
+
+  for (const project of projects) {
+    core.info(`    ${project}`);
+  }
+
+  console.log();
+
+  return projects;
 }
 
 async function find(patterns: string) {
