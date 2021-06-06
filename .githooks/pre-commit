@@ -1,12 +1,12 @@
 #!/bin/sh
 
-packages=$(find * -maxdepth 1 -name "package.json")
+actions=$(find * -maxdepth 1 -name "action.yml")
 
-for package in $packages; do
-    package_name=$(dirname $package)
+for action in $actions; do
+    action_name=$(dirname $action)
 
-    echo "Building \"$package_name\" action..."
-    pushd "$package_name" >/dev/null
+    echo "Building \"$action_name\" action..."
+    pushd "$action_name" >/dev/null
     npm run build
     git add "dist/index.js"
     popd >/dev/null
