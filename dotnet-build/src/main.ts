@@ -6,25 +6,31 @@ import * as path from 'path'
 import * as dotnet from './dotnet'
 
 async function main() {
-  const configuration = core.getInput('CONFIGURATION');
+  try {
 
-  const solution = await findSolution();
+    const configuration = core.getInput('CONFIGURATION');
 
-  await core.group(`Restoring "${solution}"...`, async () => {
-    await dotnet.restore(solution, {
-      packages: 'packages'
+    const solution = await findSolution();
+
+    await core.group(`Restoring "${solution}"...`, async () => {
+      await dotnet.restore(solution, {
+        packages: 'packages'
+      });
     });
-  });
 
-  console.log();
+    console.log();
 
-  await core.group(`Building "${solution}"...`, async () => {
-    await dotnet.build(solution, {
-      configuration: configuration,
+    await core.group(`Building "${solution}"...`, async () => {
+      await dotnet.build(solution, {
+        configuration: configuration,
+      });
     });
-  });
 
-  console.log();
+    console.log();
+
+  } catch (error) {
+    core.setFailed(error.message)
+  }
 }
 
 async function findSolution() {
@@ -35,7 +41,7 @@ async function findSolution() {
     throw new Error('No solution to restoring and building found.');
   }
 
-  const s = solutions.length > 1 ? "s" : "";
+  const s = solutions.length > 1 ? 's' : '';
   core.info(`Solution${s} to restoring and building:`);
 
   for (const solution of solutions) {

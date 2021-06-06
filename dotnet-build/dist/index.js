@@ -4105,20 +4105,25 @@ var main_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arg
 
 function main() {
     return main_awaiter(this, void 0, void 0, function* () {
-        const configuration = core.getInput('CONFIGURATION');
-        const solution = yield findSolution();
-        yield core.group(`Restoring "${solution}"...`, () => main_awaiter(this, void 0, void 0, function* () {
-            yield restore(solution, {
-                packages: 'packages'
-            });
-        }));
-        console.log();
-        yield core.group(`Building "${solution}"...`, () => main_awaiter(this, void 0, void 0, function* () {
-            yield build(solution, {
-                configuration: configuration,
-            });
-        }));
-        console.log();
+        try {
+            const configuration = core.getInput('CONFIGURATION');
+            const solution = yield findSolution();
+            yield core.group(`Restoring "${solution}"...`, () => main_awaiter(this, void 0, void 0, function* () {
+                yield restore(solution, {
+                    packages: 'packages'
+                });
+            }));
+            console.log();
+            yield core.group(`Building "${solution}"...`, () => main_awaiter(this, void 0, void 0, function* () {
+                yield build(solution, {
+                    configuration: configuration,
+                });
+            }));
+            console.log();
+        }
+        catch (error) {
+            core.setFailed(error.message);
+        }
     });
 }
 function findSolution() {
@@ -4128,7 +4133,7 @@ function findSolution() {
         if (solutions.length == 0) {
             throw new Error('No solution to restoring and building found.');
         }
-        const s = solutions.length > 1 ? "s" : "";
+        const s = solutions.length > 1 ? 's' : '';
         core.info(`Solution${s} to restoring and building:`);
         for (const solution of solutions) {
             core.info(`    ${solution}`);
