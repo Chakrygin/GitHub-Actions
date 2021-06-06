@@ -1,0 +1,17 @@
+name: .NET Build
+description: .NET Build
+
+runs:
+  using: node12
+  main: ./dist/index.js
+
+inputs:
+  CONFIGURATION:
+    description: CONFIGURATION
+    required: true
+    default: 'Release'
+
+  SOLUTION:
+    description: SOLUTION
+    required: true
+    default: '*.sln'
