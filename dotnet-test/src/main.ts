@@ -31,7 +31,7 @@ async function findBinariesToIntegrationTesting() {
   const patterns = core.getInput('PROJECTS_TO_TESTING')
     .split(os.EOL)
     .map(pattern => {
-      return `artifacts/${pattern}`;
+      return path.join('artifacts/tests', pattern);
     })
     .join(os.EOL);
 

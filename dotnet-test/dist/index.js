@@ -4122,7 +4122,7 @@ function findBinariesToIntegrationTesting() {
         const patterns = core.getInput('PROJECTS_TO_TESTING')
             .split(external_os_.EOL)
             .map(pattern => {
-            return `artifacts/${pattern}`;
+            return external_path_.join('artifacts/tests', pattern);
         })
             .join(external_os_.EOL);
         const projects = yield find(patterns);
