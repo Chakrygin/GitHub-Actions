@@ -10,12 +10,13 @@ import * as dotnet from './dotnet'
 async function main() {
   try {
 
-    var xxx = fs.readdirSync('.');
+    const patterns = core.getInput('PROJECTS_TO_TESTING');
+    const projects = await find(patterns);
 
-    console.log('Dirs: ');
+    console.log('projects: ');
 
-    for (const dir of xxx) {
-      console.log(dir);
+    for (const project of projects) {
+      console.log(project);
     }
     console.log();
 
@@ -48,13 +49,7 @@ async function main() {
 }
 
 async function findBinariesToIntegrationTesting() {
-  const patterns = core.getInput('PROJECTS_TO_TESTING')
-    .split(os.EOL)
-    .map(pattern => {
-      return path.join('artifacts/tests', pattern);
-    })
-    .join(os.EOL);
-
+  const patterns = core.getInput('PROJECTS_TO_TESTING');
   const projects = await find(patterns);
 
   const bins = projects.map(project => {

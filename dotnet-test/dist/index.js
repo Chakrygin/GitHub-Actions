@@ -2870,12 +2870,8 @@ __nccwpck_require__.r(__webpack_exports__);
 /* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _actions_glob__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(90);
 /* harmony import */ var _actions_glob__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__nccwpck_require__.n(_actions_glob__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(747);
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__nccwpck_require__.n(fs__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var os__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(87);
-/* harmony import */ var os__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__nccwpck_require__.n(os__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_4__ = __nccwpck_require__(622);
-/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__nccwpck_require__.n(path__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(622);
+/* harmony import */ var path__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__nccwpck_require__.n(path__WEBPACK_IMPORTED_MODULE_2__);
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -2888,15 +2884,14 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-
-
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            var xxx = fs__WEBPACK_IMPORTED_MODULE_2__.readdirSync('.');
-            console.log('Dirs: ');
-            for (const dir of xxx) {
-                console.log(dir);
+            const patterns = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('PROJECTS_TO_TESTING');
+            const projects = yield find(patterns);
+            console.log('projects: ');
+            for (const project of projects) {
+                console.log(project);
             }
             console.log();
             // const projects = await find('artifacts/tests/**');
@@ -2923,12 +2918,7 @@ function main() {
 }
 function findBinariesToIntegrationTesting() {
     return __awaiter(this, void 0, void 0, function* () {
-        const patterns = core.getInput('PROJECTS_TO_TESTING')
-            .split(os.EOL)
-            .map(pattern => {
-            return path.join('artifacts/tests', pattern);
-        })
-            .join(os.EOL);
+        const patterns = core.getInput('PROJECTS_TO_TESTING');
         const projects = yield find(patterns);
         const bins = projects.map(project => {
             return path.join(project, path.basename(project) + '.dll');
@@ -2952,10 +2942,10 @@ function findBinariesToIntegrationTesting() {
 }
 function find(patterns) {
     return __awaiter(this, void 0, void 0, function* () {
-        const globber = yield glob.create(patterns, {});
+        const globber = yield _actions_glob__WEBPACK_IMPORTED_MODULE_1__.create(patterns, {});
         const files = yield globber.glob();
         return files.map(file => {
-            return path.relative(process.cwd(), file);
+            return path__WEBPACK_IMPORTED_MODULE_2__.relative(process.cwd(), file);
         });
     });
 }
