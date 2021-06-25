@@ -2919,7 +2919,7 @@ function main() {
 function findBinariesToIntegrationTesting() {
     return __awaiter(this, void 0, void 0, function* () {
         const patterns = core.getInput('PROJECTS_TO_TESTING');
-        const projects = yield find(patterns);
+        const projects = yield find(patterns, { implicitDescendants: false });
         const bins = projects.map(project => {
             return path.join(project, path.basename(project) + '.dll');
         });
@@ -2940,9 +2940,9 @@ function findBinariesToIntegrationTesting() {
         return bins;
     });
 }
-function find(patterns) {
+function find(patterns, options) {
     return __awaiter(this, void 0, void 0, function* () {
-        const globber = yield _actions_glob__WEBPACK_IMPORTED_MODULE_1__.create(patterns, {});
+        const globber = yield _actions_glob__WEBPACK_IMPORTED_MODULE_1__.create(patterns, options);
         const files = yield globber.glob();
         return files.map(file => {
             return path__WEBPACK_IMPORTED_MODULE_2__.relative(process.cwd(), file);

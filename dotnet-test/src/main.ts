@@ -50,7 +50,7 @@ async function main() {
 
 async function findBinariesToIntegrationTesting() {
   const patterns = core.getInput('PROJECTS_TO_TESTING');
-  const projects = await find(patterns);
+  const projects = await find(patterns, { implicitDescendants: false });
 
   const bins = projects.map(project => {
     return path.join(project, path.basename(project) + '.dll')
@@ -79,8 +79,8 @@ async function findBinariesToIntegrationTesting() {
   return bins;
 }
 
-async function find(patterns: string) {
-  const globber = await glob.create(patterns, {});
+async function find(patterns: string, options?: glob.GlobOptions) {
+  const globber = await glob.create(patterns, options);
   const files = await globber.glob();
 
   return files.map(file => {
