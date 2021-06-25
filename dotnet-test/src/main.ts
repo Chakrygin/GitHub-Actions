@@ -10,7 +10,7 @@ import * as dotnet from './dotnet'
 async function main() {
   try {
 
-    var xxx = fs.readdirSync('artifacts/tests');
+    var xxx = fs.readdirSync('.');
 
     console.log('Dirs: ');
 
@@ -19,15 +19,15 @@ async function main() {
     }
     console.log();
 
-    const projects = await find('artifacts/tests/**');
+    // const projects = await find('artifacts/tests/**');
 
-    console.log('Projects: ');
+    // console.log('Projects: ');
 
-    for (const project of projects) {
-      console.log(project);
-    }
+    // for (const project of projects) {
+    //   console.log(project);
+    // }
 
-    console.log();
+    // console.log();
 
     // const binaries = await findBinariesToIntegrationTesting();
 

@@ -2893,18 +2893,18 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            var xxx = fs__WEBPACK_IMPORTED_MODULE_2__.readdirSync('artifacts/tests');
+            var xxx = fs__WEBPACK_IMPORTED_MODULE_2__.readdirSync('.');
             console.log('Dirs: ');
             for (const dir of xxx) {
                 console.log(dir);
             }
             console.log();
-            const projects = yield find('artifacts/tests/**');
-            console.log('Projects: ');
-            for (const project of projects) {
-                console.log(project);
-            }
-            console.log();
+            // const projects = await find('artifacts/tests/**');
+            // console.log('Projects: ');
+            // for (const project of projects) {
+            //   console.log(project);
+            // }
+            // console.log();
             // const binaries = await findBinariesToIntegrationTesting();
             // for (const binariy of binaries) {
             //   await core.group(`Testing "${binariy}"...`, async () => {
@@ -2952,10 +2952,10 @@ function findBinariesToIntegrationTesting() {
 }
 function find(patterns) {
     return __awaiter(this, void 0, void 0, function* () {
-        const globber = yield _actions_glob__WEBPACK_IMPORTED_MODULE_1__.create(patterns, {});
+        const globber = yield glob.create(patterns, {});
         const files = yield globber.glob();
         return files.map(file => {
-            return path__WEBPACK_IMPORTED_MODULE_4__.relative(process.cwd(), file);
+            return path.relative(process.cwd(), file);
         });
     });
 }
