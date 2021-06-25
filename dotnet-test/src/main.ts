@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import * as glob from '@actions/glob'
 
+import * as fs from 'fs'
 import * as os from 'os'
 import * as path from 'path'
 
@@ -9,7 +10,16 @@ import * as dotnet from './dotnet'
 async function main() {
   try {
 
-    const projects = await find('artifacts/tests/*');
+    var xxx = fs.readdirSync('artifacts/tests');
+
+    console.log('Dirs: ');
+
+    for (const dir of xxx) {
+      console.log(dir);
+    }
+    console.log();
+
+    const projects = await find('artifacts/tests/**');
 
     console.log('Projects: ');
 
@@ -75,9 +85,7 @@ async function findBinariesToIntegrationTesting() {
 }
 
 async function find(patterns: string) {
-  const globber = await glob.create(patterns, {
-
-  });
+  const globber = await glob.create(patterns, {});
   const files = await globber.glob();
 
   return files.map(file => {
