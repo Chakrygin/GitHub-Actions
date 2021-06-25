@@ -2888,7 +2888,7 @@ function main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const patterns = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('PROJECTS_TO_TESTING');
-            const projects = yield find(patterns);
+            const projects = yield find(patterns, { implicitDescendants: false });
             console.log('projects: ');
             for (const project of projects) {
                 console.log(project);

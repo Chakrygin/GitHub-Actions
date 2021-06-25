@@ -11,7 +11,7 @@ async function main() {
   try {
 
     const patterns = core.getInput('PROJECTS_TO_TESTING');
-    const projects = await find(patterns);
+    const projects = await find(patterns, { implicitDescendants: false });
 
     console.log('projects: ');
 
