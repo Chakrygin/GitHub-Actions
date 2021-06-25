@@ -1,5 +1,5 @@
-import * as core from "@actions/core"
-import * as glob from "@actions/glob"
+import * as core from '@actions/core'
+import * as glob from '@actions/glob'
 
 import * as os from 'os'
 import * as path from 'path'
@@ -9,18 +9,28 @@ import * as dotnet from './dotnet'
 async function main() {
   try {
 
-    const binaries = await findBinariesToIntegrationTesting();
+    const projects = await find('artifacts/tests/*');
 
-    for (const binariy of binaries) {
-      await core.group(`Testing "${binariy}"...`, async () => {
-        await dotnet.vstest(binariy, {
-          logger: 'trx',
-          resultsDirectory: 'TestResults'
-        });
-      });
+    console.log('Projects: ');
 
-      console.log();
+    for (const project of projects) {
+      console.log(project);
     }
+
+    console.log();
+
+    // const binaries = await findBinariesToIntegrationTesting();
+
+    // for (const binariy of binaries) {
+    //   await core.group(`Testing "${binariy}"...`, async () => {
+    //     await dotnet.vstest(binariy, {
+    //       logger: 'trx',
+    //       resultsDirectory: 'TestResults'
+    //     });
+    //   });
+
+    //   console.log();
+    // }
 
   } catch (error) {
     core.setFailed(error.message)
@@ -65,7 +75,9 @@ async function findBinariesToIntegrationTesting() {
 }
 
 async function find(patterns: string) {
-  const globber = await glob.create(patterns);
+  const globber = await glob.create(patterns, {
+
+  });
   const files = await globber.glob();
 
   return files.map(file => {
