@@ -10,38 +10,18 @@ import * as dotnet from './dotnet'
 async function main() {
   try {
 
-    const patterns = core.getInput('PROJECTS_TO_TESTING');
-    const projects = await find(patterns, { implicitDescendants: false });
+    const binaries = await findBinariesToIntegrationTesting();
 
-    console.log('projects: ');
+    for (const binariy of binaries) {
+      await core.group(`Testing "${binariy}"...`, async () => {
+        await dotnet.vstest(binariy, {
+          logger: 'trx',
+          resultsDirectory: 'TestResults'
+        });
+      });
 
-    for (const project of projects) {
-      console.log(project);
+      console.log();
     }
-    console.log();
-
-    // const projects = await find('artifacts/tests/**');
-
-    // console.log('Projects: ');
-
-    // for (const project of projects) {
-    //   console.log(project);
-    // }
-
-    // console.log();
-
-    // const binaries = await findBinariesToIntegrationTesting();
-
-    // for (const binariy of binaries) {
-    //   await core.group(`Testing "${binariy}"...`, async () => {
-    //     await dotnet.vstest(binariy, {
-    //       logger: 'trx',
-    //       resultsDirectory: 'TestResults'
-    //     });
-    //   });
-
-    //   console.log();
-    // }
 
   } catch (error) {
     core.setFailed(error.message)
